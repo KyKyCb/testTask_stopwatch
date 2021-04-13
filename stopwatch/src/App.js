@@ -11,6 +11,7 @@ class App extends React.Component{
       hours: 0,
       isInProgress: false,
     }
+
     this.startStopwatch = this.startStopwatch.bind(this)
     this.stopStopwatch = this.stopStopwatch.bind(this)
     this.timerHandler = this.timerHandler.bind(this)
@@ -81,9 +82,7 @@ class App extends React.Component{
     const hours = this.state.hours;
   
     return (
-      
       <div className="App">
-        
         <h1>          
           {(this.state.hours < 10) ? `0${hours}` : hours}:
           {(this.state.minutes < 10) ? `0${minutes}` : minutes}:
