@@ -79,7 +79,7 @@ class App extends React.Component{
     const seconds = this.state.seconds;
     const minutes = this.state.minutes;
     const hours = this.state.hours;
-    
+  
     return (
       
       <div className="App">
