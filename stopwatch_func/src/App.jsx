@@ -1,8 +1,7 @@
 
 import React, {useState, useEffect } from 'react';
 import './App.css';
-
-
+import { Observable } from 'rxjs';
 
 function App() {
 
@@ -12,12 +11,8 @@ function App() {
     hours: 0,
     isInProgress: false,}
 
-  
-
   const [time, setTime] = useState(stopwatch)
-  const [intervalID, setIntervalId] = useState(null)
-
-  
+  const [Obs, setObs] = useState(null)
 
   useEffect(()=>{
 
@@ -45,30 +40,38 @@ function App() {
         hours: 0,}
       })
     }
+  }, [time.seconds, time.minutes, time.hours])
+
+
+  const observable = new Observable (observer => {
+    let subscribeId = setInterval(()=>observer.next(1), 1000)
+    return {
+      unsubscribe() {
+        clearInterval(subscribeId);
+      }}
   })
 
-  function incrementSeconds () {
-    setTime((prevTime) =>  
-      {  
-        return {...prevTime, seconds: prevTime.seconds + 1}  
-      })
-    
-    }
-
-  function startStopwatch(){
-      setTime((prevTime) =>  
-      {  
-        return {...prevTime, isInProgress: true,}  
-      })
-      const interval = setInterval(incrementSeconds, 1000)
-      setIntervalId(interval)
-    }
-
-  function stopStopwatch(){
-    clearInterval(intervalID)
-    setTime({...stopwatch})
+  function incrementSeconds (value) {
+    setTime((prevTime)=> { 
+      return {...prevTime, 
+              seconds: prevTime.seconds + value,}})
   }
-
+    
+  function startStopwatch(){
+    setTime((prevTime)=> { 
+      return {...prevTime, 
+              isInProgress: true}})
+    const ObsHandler = observable.subscribe({
+      next: value => incrementSeconds(value),
+    })
+    setObs(ObsHandler)      
+  }
+    
+  function stopStopwatch(){
+    setTime({...stopwatch})
+    Obs.unsubscribe()      
+  }
+    
   function timerHandler(){
     if(!time.isInProgress){
       startStopwatch()
@@ -77,7 +80,7 @@ function App() {
       stopStopwatch()
     }
   }
-
+  
   function pauseStopwatch(){
     if(!time.isInProgress){
       startStopwatch()
@@ -87,36 +90,35 @@ function App() {
       {
         return {...prevTime, isInProgress: false,}
       })
-      clearInterval(intervalID)
-    }
+      Obs.unsubscribe()
+    }      
   }
- 
+   
   function resetStopwatch(){
     setTime((prevTime) => 
-    {
-      return {...prevTime, 
-        seconds: 0, 
-        minutes: 0, 
-        hours: 0,}
-    })
+  {
+    return {...prevTime, 
+      seconds: 0, 
+      minutes: 0, 
+      hours: 0,}
+  })      
   }
-
-
-    const seconds = time.seconds;
-    const minutes = time.minutes;
-    const hours = time.hours; 
-
-    return (
-      <div className="App">
-        <h1>          
-          {(time.hours < 10) ? `0${hours}` : hours}:
-          {(time.minutes < 10) ? `0${minutes}` : minutes}:
-          {(time.seconds < 10) ? `0${seconds}` : seconds} 
-          </h1>
-        <button onClick = {timerHandler}>Start/Stop</button>
-        <button onDoubleClick = {pauseStopwatch}>Pause</button>
-        <button onClick = {resetStopwatch}>Reset</button> 
-      </div>)
+  
+  const seconds = time.seconds;
+  const minutes = time.minutes;
+  const hours = time.hours; 
+  
+  return (
+    <div className="clock">
+      <h1>
+      <span>{(time.hours < 10) ? `0${hours}` : hours}</span>:
+      <span>{(time.minutes < 10) ? `0${minutes}` : minutes}</span>:
+      <span>{(time.seconds < 10) ? `0${seconds}` : seconds} </span>
+        </h1>
+      <button onClick = {timerHandler} className = 'button'>{(time.isInProgress) ? 'stop' : 'start'}</button>
+      <button onDoubleClick = {pauseStopwatch} className = 'button'>Pause</button>
+      <button onClick = {resetStopwatch} className = 'button'>Reset</button> 
+    </div>)
 }
 
 export default App;
