@@ -82,16 +82,16 @@ class App extends React.Component{
     const hours = this.state.hours;
   
     return (
-      <div className="App">
-        <h1>          
-          {(this.state.hours < 10) ? `0${hours}` : hours}:
-          {(this.state.minutes < 10) ? `0${minutes}` : minutes}:
-          {(this.state.seconds < 10) ? `0${seconds}` : seconds} 
-          </h1>
+      <div className="clock">
+        <h1>
+          <span>{(this.state.hours < 10) ? `0${hours}` : hours}</span>:
+          <span>{(this.state.minutes < 10) ? `0${minutes}` : minutes}</span>:
+          <span>{(this.state.seconds < 10) ? `0${seconds}` : seconds} </span>
+        </h1>
 
-        <button onClick = {this.timerHandler}>Start/Stop</button>
-        <button onDoubleClick = {this.pauseStopwatch}>Pause</button>
-        <button onClick = {this.resetStopwatch}>Reset</button>
+        <button onClick = {this.timerHandler} className = 'button'>{(this.state.isInProgress) ? 'stop' : 'start'}</button>
+        <button onDoubleClick = {this.pauseStopwatch} className = 'button'>Pause</button>
+        <button onClick = {this.resetStopwatch} className = 'button'>Reset</button>
       </div>)
   }
 }
